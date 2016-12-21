@@ -8,13 +8,13 @@ namespace Misc
 {
     public class Rate
     {
-        private double _grossRate;
-        private double _intensity;
+        private double r;
+        private double delta;
 
-        public Rate(double grossRate)
+        public Rate(double r)
         {
-            _grossRate = grossRate;
-            _intensity = Math.Log(1 + grossRate);
+            this.r = r;
+            delta = Math.Log(1 + r);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Misc
         /// <returns></returns>
         public double Linear(double v0, double t)
         {
-            return (1 + _grossRate*t)*v0;
+            return (1 + r*t)*v0;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Misc
         /// <returns></returns>
         public double Compound(double v0, double t)
         {
-            return v0*Math.Pow(1 + _grossRate, t);
+            return v0*Math.Pow(1 + r, t);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Misc
         /// <returns></returns>
         public double CompoundExp(double v0, double t)
         {
-            return v0*Math.Exp(_intensity*t);
+            return v0*Math.Exp(delta*t);
         }
 
         /// <summary>
@@ -68,12 +68,12 @@ namespace Misc
         /// <returns></returns>
         public double PresentValueExp(double v0, double t)
         {
-            return v0*Math.Exp(-_intensity*t);
+            return v0*Math.Exp(-delta*t);
         }
 
         public double PresentValue(double v0, double t)
         {
-            return v0* Math.Pow(1/(1 + _grossRate),t);
+            return v0* Math.Pow(1/(1 + r),t);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Misc
         /// <returns></returns>
         public double Annuity(double v0, double t, double p)
         {
-            return v0 * (Math.Pow(1 + _grossRate, t) - 1)/_grossRate;
+            return v0 * (Math.Pow(1 + r, t) - 1)/r;
         }
 
         /// <summary>
@@ -102,28 +102,25 @@ namespace Misc
         /// <returns></returns>
         public double AnnuityPresentValue(double v0, double t, double p)
         {
-            return v0*Math.Pow(1 + _grossRate, -t);
+            return v0*Math.Pow(1 + r, -t);
         }
 
         public double AnnuityExp(double v0, double t, double step)
         {
-            double s=0d;
+            var s=0d;
             for (double n = 0; n < t; n+=step)
             {
-                s+=Math.Exp(_intensity*(t-n));
+                s+=Math.Exp(delta*(t-n));
             }
             return s*v0;
         }
 
         public double AnnuityPresentValueExp(double v0, double t)
         {
-            var method1 = (1 - Math.Exp(-_intensity*t))/_intensity;
-            var method2 = v0 * Math.Exp(-_intensity * t);
+            var method1 = (1 - Math.Exp(-delta*t))/delta;   //?
+            var method2 = v0 * Math.Exp(-delta * t);
 
-            return v0*Math.Exp(-_intensity*t);
-
-
-
+            return method2;
         }
 
 
